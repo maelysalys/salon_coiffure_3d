@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salon Élégance - Coiffure de luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;500;600&family=Cinzel+Decorative:wght@700;900&family=Great+Vibes&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:#fff;color:#222;line-height:1.6;scroll-behavior:smooth;overflow-x:hidden;}
+img{max-width:100%;display:block;border-radius:1rem;}
+
+/* PAGE D'ACCUEIL 3D */
+#home3d{
+  position:relative;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+  background:#000;
+}
+#canvas3d{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+}
+.home-overlay{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:10;
+  pointer-events:none;
+}
+.home-content{
+  text-align:center;
+  color:#fff;
+  animation:fadeInUp 1.5s ease;
+}
+.home-content h1{
+  font-family:'Cinzel Decorative',serif;
+  font-size:6rem;
+  font-weight:900;
+  letter-spacing:8px;
+  margin-bottom:1rem;
+  text-shadow:0 0 40px rgba(255,215,0,1), 0 0 80px rgba(182,143,64,0.8), 0 5px 20px rgba(0,0,0,0.5);
+  background:linear-gradient(45deg,#fff,#ffd700,#fff,#ff69b4,#ffd700,#fff);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradientShift 4s ease infinite, textFloat 3s ease-in-out infinite;
+  position:relative;
+}
+.home-content h1::before{
+  content:'✦';
+  position:absolute;
+  left:-60px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:2.5rem;
+  animation:sparkle 2s ease-in-out infinite;
+}
+.home-content h1::after{
+  content:'✦';
+  position:absolute;
+  right:-60px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:2.5rem;
+  animation:sparkle 2s ease-in-out infinite 1s;
+}
+.home-content p{
+  font-family:'Great Vibes',cursive;
+  font-size:3.5rem;
+  margin-bottom:2rem;
+  text-shadow:0 0 30px rgba(255,215,0,1), 0 0 60px rgba(255,105,180,0.6), 0 5px 15px rgba(0,0,0,0.5);
+  color:#ffd700;
+  animation:textFloat 4s ease-in-out infinite 0.5s;
+  font-weight:700;
+  letter-spacing:3px;
+}
+
+@keyframes gradientShift{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+
+@keyframes textFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-10px);}
+}
+
+@keyframes sparkle{
+  0%,100%{opacity:1;transform:translateY(-50%) scale(1);}
+  50%{opacity:0.3;transform:translateY(-50%) scale(1.2);}
+}
+.btn-enter{
+  display:inline-block;
+  padding:1rem 3rem;
+  background:linear-gradient(135deg,#b68f40,#ffd700);
+  color:#000;
+  font-weight:700;
+  font-size:1.2rem;
+  text-decoration:none;
+  border-radius:50px;
+  box-shadow:0 10px 30px rgba(182,143,64,0.5);
+  transition:all 0.3s;
+  pointer-events:all;
+  cursor:pointer;
+  font-family:'Playfair Display',serif;
+}
+.btn-enter:hover{
+  transform:translateY(-5px) scale(1.05);
+  box-shadow:0 15px 40px rgba(255,215,0,0.7);
+}
+
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(40px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* SCROLL INDICATOR */
+.scroll-indicator{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  animation:bounce 2s infinite;
+}
+.scroll-indicator span{
+  display:block;
+  width:30px;
+  height:50px;
+  border:2px solid rgba(255,255,255,0.8);
+  border-radius:25px;
+  position:relative;
+}
+.scroll-indicator span::before{
+  content:'';
+  position:absolute;
+  top:10px;
+  left:50%;
+  width:6px;
+  height:6px;
+  background:#fff;
+  border-radius:50%;
+  transform:translateX(-50%);
+  animation:scroll 2s infinite;
+}
+
+@keyframes bounce{
+  0%,100%{transform:translateX(-50%) translateY(0);}
+  50%{transform:translateX(-50%) translateY(-10px);}
+}
+
+@keyframes scroll{
+  0%{opacity:1;top:10px;}
+  100%{opacity:0;top:30px;}
+}
+
+/* HEADER PREMIUM */
+header{
+  background:linear-gradient(rgba(255,223,0,0.3),rgba(255,223,0,0.1)),
+    url('https://images.unsplash.com/photo-1596464716121-9e3f06f9b3aa?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+  text-align:center;
+  padding:5rem 1rem;
+  color:#b68f40;
+}
+header h1{font-family:'Playfair Display',serif;font-size:3rem;letter-spacing:2px;margin-bottom:0.5rem;color:#b68f40;}
+header p{font-size:1.3rem;color:#5c4635;}
+
+/* NAVIGATION */
+nav{
+  background:#b68f40;
+  display:flex;justify-content:center;gap:2rem;padding:1rem 0;position:sticky;top:0;z-index:100;
+}
+nav a{color:#fff;font-weight:600;text-decoration:none;transition:0.3s;font-size:1rem;}
+nav a:hover{color:#fff;text-shadow:0 0 5px #fff;}
+
+/* SECTIONS */
+section{
+  padding:3rem 1rem;
+  max-width:1100px;
+  margin:auto;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 0.8s ease;
+}
+section.show{opacity:1;transform:translateY(0);}
+h2{text-align:center;font-family:'Playfair Display',serif;color:#b68f40;margin-bottom:2rem;font-size:2rem;}
+
+/* PHOTOS REPRESENTATIVES */
+.representative-photos{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1rem;
+  margin-bottom:2rem;
+}
+.representative-photos img{
+  height:160px;
+  object-fit:cover;
+  box-shadow:0 4px 15px rgba(0,0,0,0.15);
+  transition:transform 0.3s;
+}
+.representative-photos img:hover{transform:scale(1.05);}
+
+/* PRESTATIONS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:1.5rem;
+}
+.card{
+  background:#fff;border-radius:1rem;overflow:hidden;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+  cursor:pointer;transition:0.3s;position:relative;
+}
+.card:hover{transform:translateY(-6px);}
+.card img{height:170px;object-fit:cover;border-bottom:1px solid #eee;}
+.card-content{text-align:center;padding:1rem;}
+.card-content h3{color:#b68f40;font-family:'Playfair Display',serif;margin-bottom:0.5rem;font-size:1.2rem;}
+.card-content p{color:#444;font-size:0.9rem;}
+.price-tag{
+  position:absolute;top:10px;right:10px;
+  background:#ffd700;color:#222;font-weight:700;
+  padding:0.35rem 0.9rem;border-radius:50px;
+  font-family:'Playfair Display',serif;font-size:0.9rem;
+}
+
+/* FORMULAIRE */
+#reservation form{
+  background:#fff;border-radius:1rem;
+  padding:1.5rem;max-width:500px;margin:auto;
+  display:flex;flex-direction:column;gap:0.8rem;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+#reservation input,#reservation select,#reservation button{
+  padding:0.7rem;border-radius:6px;border:1px solid #ccc;font-size:1rem;width:100%;
+}
+#reservation input:focus,#reservation select:focus{border-color:#b68f40;outline:none;box-shadow:0 0 10px rgba(182,143,64,0.3);}
+#reservation button{background:#b68f40;color:#fff;font-weight:600;border:none;cursor:pointer;transition:0.3s;}
+#reservation button:hover{background:#9e6f1c;}
+
+/* POPUPS */
+.popup{
+  display:none;position:fixed;bottom:20px;right:20px;
+  background:#222;color:#ffd700;padding:0.8rem 1.2rem;border-radius:12px;font-weight:500;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);z-index:200;
+}
+
+/* FOOTER */
+footer{background:#b68f40;color:#fff;text-align:center;padding:1.2rem 0;font-size:0.95rem;margin-top:3rem;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .home-content h1{font-size:3.5rem;letter-spacing:4px;}
+  .home-content h1::before,.home-content h1::after{font-size:1.5rem;left:-40px;right:-40px;}
+  .home-content p{font-size:1.8rem;}
+  header h1{font-size:2.3rem;}
+  .representative-photos img{height:140px;}
+  .card img{height:140px;}
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE D'ACCUEIL 3D -->
+<div id="home3d">
+  <canvas id="canvas3d"></canvas>
+  <div class="home-overlay">
+    <div class="home-content">
+      <h1>Salon Élégance</h1>
+      <p>L'excellence en coiffure de luxe</p>
+      <a href="#main-content" class="btn-enter">Découvrir</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span></span>
+  </div>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<div id="main-content">
+
+<header>
+  <h1>Salon Élégance</h1>
+  <p>Coiffure de luxe – Beauté – Bien-être</p>
+</header>
+
+<nav>
+  <a href="#prestations">Prestations</a>
+  <a href="#galerie">Galerie</a>
+  <a href="#reservation">Réservation</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- PHOTOS REPRESENTATIVES -->
+<section id="galerie">
+  <h2>Galerie</h2>
+  <div class="representative-photos">
+    <img src="https://cdn.shopify.com/s/files/1/0437/4341/2382/files/shutterstock_1776190700_1_480x480.jpg?v=1695206117" alt="Femme élégante 1">
+    <img src="https://cdn.shopify.com/s/files/1/0437/4341/2382/files/shutterstock_1776190742_1_480x480.jpg?v=1695206534" alt="Femme élégante 2">
+    <img src="https://i.pinimg.com/736x/44/77/37/44773751461e9afc4b5f0d4533af3ec5.jpg" alt="Femme élégante 3">
+    <img src="https://i.pinimg.com/736x/18/2a/63/182a63f89f0567a8776a148377b9e8a4.jpg" alt="Femme élégante 4">
+  </div>
+</section>
+
+<!-- PRESTATIONS -->
+<section id="prestations">
+  <h2>Nos Prestations & Tarifs</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="price-tag">45€</span>
+      <img src="https://cdn.shopify.com/s/files/1/0437/4341/2382/files/shutterstock_1776190700_1_480x480.jpg" alt="Coupe Femme">
+      <div class="card-content"><h3>Coupe Femme</h3><p>Shampoing, coupe, brushing inclus</p></div>
+    </div>
+    <div class="card">
+      <span class="price-tag">70€</span>
+      <img src="https://cdn.shopify.com/s/files/1/0437/4341/2382/files/shutterstock_1776190742_1_480x480.jpg" alt="Coloration Complète">
+      <div class="card-content"><h3>Coloration Complète</h3><p>Teintes naturelles ou audacieuses</p></div>
+    </div>
+    <div class="card">
+      <span class="price-tag">120€</span>
+      <img src="https://i.pinimg.com/736x/44/77/37/44773751461e9afc4b5f0d4533af3ec5.jpg" alt="Lissage Kératine">
+      <div class="card-content"><h3>Lissage Kératine</h3><p>Soyeux et durable jusqu'à 3 mois</p></div>
+    </div>
+    <div class="card">
+      <span class="price-tag">80€</span>
+      <img src="https://i.pinimg.com/736x/18/2a/63/182a63f89f0567a8776a148377b9e8a4.jpg" alt="Mèches / Balayage">
+      <div class="card-content"><h3>Mèches / Balayage</h3><p>Style lumineux et moderne</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULAIRE -->
+<section id="reservation">
+  <h2>Réserver un Rendez-vous</h2>
+  <form id="bookingForm">
+    <input type="text" id="nom" placeholder="👤 Votre nom" required>
+    <input type="email" id="email" placeholder="📧 Votre e-mail" required>
+    <input type="tel" id="tel" placeholder="📞 Votre téléphone" required>
+    <select id="prestation" required>
+      <option value="">Choisissez une prestation</option>
+      <option>Coupe Femme</option>
+      <option>Coloration Complète</option>
+      <option>Lissage Kératine</option>
+      <option>Mèches / Balayage</option>
+    </select>
+    <input type="date" id="date" required>
+    <input type="time" id="heure" required>
+    <button type="submit">Réserver</button>
+  </form>
+</section>
+
+<!-- POPUPS -->
+<div id="popup-confirmation" class="popup">✅ Merci pour votre réservation !</div>
+<div id="popup-reminder" class="popup">💬 Merci de bien vouloir noter votre rendez-vous</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2>Contact</h2>
+  <p style="text-align:center;">📍 123 Rue de la Beauté, 75001 Paris – 📞 01 23 45 67 89 – ✉ contact@elegance.fr</p>
+</section>
+
+<footer>© 2025 Salon Élégance – Tous droits réservés</footer>
+
+</div>
+
+<script>
+// SCENE 3D
+const canvas = document.getElementById('canvas3d');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
+// PARTICULES DORÉES
+const particlesGeometry = new THREE.BufferGeometry();
+const particlesCount = 2000;
+const posArray = new Float32Array(particlesCount * 3);
+
+for(let i=0; i<particlesCount*3; i++){
+  posArray[i] = (Math.random()-0.5)*100;
+}
+
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+const particlesMaterial = new THREE.PointsMaterial({
+  size:0.15,
+  color:0xffd700,
+  transparent:true,
+  opacity:0.8,
+  blending:THREE.AdditiveBlending
+});
+const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particlesMesh);
+
+// LUMIÈRES MAJESTUEUSES
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambientLight);
+
+// Lumière principale dorée
+const pointLight1 = new THREE.PointLight(0xffd700, 3, 100);
+pointLight1.position.set(10, 10, 10);
+scene.add(pointLight1);
+
+// Lumière secondaire rose
+const pointLight2 = new THREE.PointLight(0xff1493, 2.5, 100);
+pointLight2.position.set(-10, -10, 10);
+scene.add(pointLight2);
+
+// Lumière directionnelle pour le trône
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(0, 10, 5);
+scene.add(directionalLight);
+
+// Lumière spotlight sur le trône
+const spotLight = new THREE.SpotLight(0xffd700, 2);
+spotLight.position.set(0, 15, 10);
+spotLight.angle = Math.PI / 6;
+spotLight.penumbra = 0.3;
+scene.add(spotLight);
+
+// TRÔNE DE LA BEAUTÉ MAJESTUEUSE INÉDIT
+const group = new THREE.Group();
+
+// === MATÉRIAUX LUXUEUX ===
+const royalGoldMaterial = new THREE.MeshPhysicalMaterial({
+  color:0xffd700,
+  metalness:1,
+  roughness:0.05,
+  clearcoat:1,
+  clearcoatRoughness:0.1,
+  reflectivity:1,
+  emissive:0xffaa00,
+  emissiveIntensity:0.6
+});
+
+const diamondMaterial = new THREE.MeshPhysicalMaterial({
+  color:0xffffff,
+  metalness:0,
+  roughness:0,
+  transmission:0.95,
+  thickness:0.5,
+  clearcoat:1,
+  reflectivity:1,
+  ior:2.4
+});
+
+const rubyMaterial = new THREE.MeshPhysicalMaterial({
+  color:0xff0066,
+  metalness:0.8,
+  roughness:0.1,
+  emissive:0xff1493,
+  emissiveIntensity:1,
+  clearcoat:1
+});
+
+// === STRUCTURE PRINCIPALE ===
+// Base architecturale à 8 piliers
+const baseRadius = 5;
+for(let i=0; i<8; i++){
+  const angle = (i / 8) * Math.PI * 2;
+  const pillarGeometry = new THREE.CylinderGeometry(0.3, 0.4, 3, 8);
+  const pillar = new THREE.Mesh(pillarGeometry, royalGoldMaterial);
+  pillar.position.set(
+    Math.cos(angle) * baseRadius,
+    -2,
+    Math.sin(angle) * baseRadius
+  );
+  group.add(pillar);
+  
+  // Sphères au sommet des piliers
+  const topSphere = new THREE.Mesh(
+    new THREE.SphereGeometry(0.5, 32, 32),
+    rubyMaterial
+  );
+  topSphere.position.set(
+    Math.cos(angle) * baseRadius,
+    -0.5,
+    Math.sin(angle) * baseRadius
+  );
+  group.add(topSphere);
+}
+
+// Plateforme circulaire
+const platformGeometry = new THREE.CylinderGeometry(5.5, 6, 0.5, 64);
+const platform = new THREE.Mesh(platformGeometry, royalGoldMaterial);
+platform.position.y = -3.5;
+group.add(platform);
+
+// === SIÈGE IMPÉRIAL ===
+const seatGeometry = new THREE.CylinderGeometry(2.5, 3, 1, 32);
+const seat = new THREE.Mesh(seatGeometry, royalGoldMaterial);
+seat.position.y = -1.5;
+group.add(seat);
+
+// Coussin de velours (simulé)
+const cushionGeometry = new THREE.CylinderGeometry(2.3, 2.3, 0.3, 32);
+const cushionMaterial = new THREE.MeshStandardMaterial({
+  color:0x8b0000,
+  roughness:0.8,
+  metalness:0.1
+});
+const cushion = new THREE.Mesh(cushionGeometry, cushionMaterial);
+cushion.position.y = -1;
+group.add(cushion);
+
+// === DOSSIER MAJESTUEUX EN FORME D'AILES ===
+for(let side = -1; side <= 1; side += 2){
+  const wingGeometry = new THREE.BoxGeometry(0.3, 6, 3);
+  const wing = new THREE.Mesh(wingGeometry, royalGoldMaterial);
+  wing.position.set(side * 2.5, 1.5, -1.2);
+  wing.rotation.z = side * 0.3;
+  wing.rotation.y = side * 0.2;
+  group.add(wing);
+  
+  // Ornements sur les ailes
+  for(let j=0; j<5; j++){
+    const ornament = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 16, 16),
+      diamondMaterial
+    );
+    ornament.position.set(
+      side * 2.5,
+      -0.5 + j * 1,
+      -1.2
+    );
+    group.add(ornament);
+  }
+}
+
+// === COURONNE IMPÉRIALE COMPLEXE ===
+// Base de la couronne
+const crownBase = new THREE.Mesh(
+  new THREE.CylinderGeometry(2, 2.2, 0.5, 32),
+  royalGoldMaterial
+);
+crownBase.position.y = 4.5;
+group.add(crownBase);
+
+// 8 pointes de couronne
+for(let i=0; i<8; i++){
+  const angle = (i / 8) * Math.PI * 2;
+  const spikeGeometry = new THREE.ConeGeometry(0.3, 2, 4);
+  const spike = new THREE.Mesh(spikeGeometry, royalGoldMaterial);
+  spike.position.set(
+    Math.cos(angle) * 2.1,
+    5.5,
+    Math.sin(angle) * 2.1
+  );
+  spike.rotation.z = Math.cos(angle) * 0.3;
+  spike.rotation.x = Math.sin(angle) * 0.3;
+  group.add(spike);
+  
+  // Rubis au sommet de chaque pointe
+  const ruby = new THREE.Mesh(
+    new THREE.SphereGeometry(0.25, 16, 16),
+    rubyMaterial
+  );
+  ruby.position.set(
+    Math.cos(angle) * 2.1,
+    6.5,
+    Math.sin(angle) * 2.1
+  );
+  group.add(ruby);
+}
+
+// Diamant central au sommet
+const centerDiamond = new THREE.Mesh(
+  new THREE.OctahedronGeometry(0.8, 0),
+  diamondMaterial
+);
+centerDiamond.position.y = 7;
+group.add(centerDiamond);
+
+// === ACCOUDOIRS SCULPTÉS ===
+for(let side = -1; side <= 1; side += 2){
+  // Accoudoir principal
+  const armGeometry = new THREE.BoxGeometry(0.6, 2, 2.5);
+  const arm = new THREE.Mesh(armGeometry, royalGoldMaterial);
+  arm.position.set(side * 2.8, -0.3, 0);
+  group.add(arm);
+  
+  // Tête de lion ornementale
+  const lionHead = new THREE.Mesh(
+    new THREE.SphereGeometry(0.5, 32, 32),
+    royalGoldMaterial
+  );
+  lionHead.position.set(side * 2.8, 0.8, 1.5);
+  group.add(lionHead);
+  
+  // Yeux de lion en rubis
+  const eyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+  const eye1 = new THREE.Mesh(eyeGeometry, rubyMaterial);
+  eye1.position.set(side * (2.8 + 0.2), 0.9, 1.8);
+  group.add(eye1);
+  
+  const eye2 = new THREE.Mesh(eyeGeometry, rubyMaterial);
+  eye2.position.set(side * (2.8 - 0.2), 0.9, 1.8);
+  group.add(eye2);
+}
+
+// === ANNEAUX MAGIQUES ORBITAUX ===
+const rings = [];
+
+// === GALAXIES FLOTTANTES ===
+const galaxies = [];
+for(let g=0; g<5; g++){
+  const galaxyGroup = new THREE.Group();
+  
+  // Noyau de la galaxie
+  const coreGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+  const coreMaterial = new THREE.MeshPhysicalMaterial({
+    color:g % 2 === 0 ? 0xff69b4 : 0x9370db,
+    emissive:g % 2 === 0 ? 0xff1493 : 0x8a2be2,
+    emissiveIntensity:1.5,
+    transparent:true,
+    opacity:0.9
+  });
+  const core = new THREE.Mesh(coreGeometry, coreMaterial);
+  galaxyGroup.add(core);
+  
+  // Spirale d'étoiles autour du noyau
+  const starCount = 300;
+  const starsGeometry = new THREE.BufferGeometry();
+  const starPositions = new Float32Array(starCount * 3);
+  const starColors = new Float32Array(starCount * 3);
+  
+  for(let i=0; i<starCount; i++){
+    const angle = (i / starCount) * Math.PI * 4;
+    const radius = (i / starCount) * 8;
+    const height = (Math.random() - 0.5) * 2;
+    
+    starPositions[i * 3] = Math.cos(angle) * radius;
+    starPositions[i * 3 + 1] = height;
+    starPositions[i * 3 + 2] = Math.sin(angle) * radius;
+    
+    const colorChoice = Math.random();
+    if(colorChoice < 0.33){
+      starColors[i * 3] = 1; starColors[i * 3 + 1] = 0.4; starColors[i * 3 + 2] = 0.7;
+    } else if(colorChoice < 0.66){
+      starColors[i * 3] = 0.4; starColors[i * 3 + 1] = 0.7; starColors[i * 3 + 2] = 1;
+    } else {
+      starColors[i * 3] = 1; starColors[i * 3 + 1] = 0.8; starColors[i * 3 + 2] = 0.2;
+    }
+  }
+  
+  starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  starsGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+  
+  const starsMaterial = new THREE.PointsMaterial({
+    size:0.15,
+    vertexColors:true,
+    transparent:true,
+    opacity:0.9,
+    blending:THREE.AdditiveBlending
+  });
+  
+  const stars = new THREE.Points(starsGeometry, starsMaterial);
+  galaxyGroup.add(stars);
+  
+  // Position de la galaxie
+  const angle = (g / 5) * Math.PI * 2;
+  const distance = 25 + g * 5;
+  galaxyGroup.position.set(
+    Math.cos(angle) * distance,
+    (Math.random() - 0.5) * 15,
+    Math.sin(angle) * distance
+  );
+  
+  galaxyGroup.userData.angle = angle;
+  galaxyGroup.userData.distance = distance;
+  galaxyGroup.userData.speed = 0.1 + Math.random() * 0.1;
+  galaxyGroup.userData.rotationSpeed = 0.3 + Math.random() * 0.2;
+  
+  galaxies.push(galaxyGroup);
+  scene.add(galaxyGroup);
+}
+
+// === PAPILLONS LUMINEUX ===
+const butterflies = [];
+const butterflyGeometry = new THREE.PlaneGeometry(0.8, 0.6);
+for(let i=0; i<15; i++){
+  const butterflyMaterial = new THREE.MeshBasicMaterial({
+    color:Math.random() > 0.5 ? 0xff69b4 : 0xffd700,
+    transparent:true,
+    opacity:0.8,
+    side:THREE.DoubleSide
+  });
+  const butterfly = new THREE.Mesh(butterflyGeometry, butterflyMaterial);
+  const angle = (i / 15) * Math.PI * 2;
+  const radius = 10 + Math.random() * 5;
+  butterfly.position.set(
+    Math.cos(angle) * radius,
+    (Math.random() - 0.5) * 8,
+    Math.sin(angle) * radius
+  );
+  butterfly.userData.angle = angle;
+  butterfly.userData.radius = radius;
+  butterfly.userData.speed = 0.3 + Math.random() * 0.5;
+  butterfly.userData.flutter = Math.random() * Math.PI * 2;
+  butterflies.push(butterfly);
+  scene.add(butterfly);
+}
+
+scene.add(group);
+camera.position.z = 25;
+camera.position.y = 3;
+
+// ANIMATION
+let mouseX = 0;
+let mouseY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+  mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+function animate(){
+  requestAnimationFrame(animate);
+  
+  const time = Date.now() * 0.001;
+  
+  // === ANIMATION DU TRÔNE ===
+  // Rotation majestueuse lente
+  group.rotation.y = time * 0.15;
+  
+  // Lévitation élégante et ample
+  group.position.y = Math.sin(time * 0.4) * 1.2;
+  
+  // Légère inclinaison respiratoire
+  group.rotation.x = Math.cos(time * 0.3) * 0.08;
+  group.rotation.z = Math.sin(time * 0.25) * 0.05;
+  
+  // Interaction souris fluide
+  group.rotation.y += mouseX * 0.4;
+  group.rotation.x += mouseY * 0.3;
+  
+  // === ANNEAUX MAGIQUES ORBITAUX ===
+  rings.forEach((ring, i) => {
+    if(ring.userData.axis === 0){
+      ring.rotation.z += ring.userData.speed * 0.01;
+    } else if(ring.userData.axis === 1){
+      ring.rotation.x += ring.userData.speed * 0.01;
+    } else {
+      ring.rotation.y += ring.userData.speed * 0.01;
+    }
+    // Pulsation lumineuse
+    ring.material.emissiveIntensity = 0.6 + Math.sin(time * 2 + i) * 0.4;
+  });
+  
+  // === PAPILLONS LUMINEUX ===
+  butterflies.forEach((butterfly, i) => {
+    // Orbite circulaire
+    butterfly.userData.angle += butterfly.userData.speed * 0.01;
+    butterfly.position.x = Math.cos(butterfly.userData.angle) * butterfly.userData.radius;
+    butterfly.position.z = Math.sin(butterfly.userData.angle) * butterfly.userData.radius;
+    
+    // Mouvement vertical sinueux
+    butterfly.position.y = Math.sin(time * 0.8 + i) * 4;
+    
+    // Battement d'ailes
+    butterfly.userData.flutter += 0.1;
+    butterfly.scale.x = 1 + Math.sin(butterfly.userData.flutter) * 0.3;
+    
+    // Toujours face à la caméra
+    butterfly.rotation.y = -butterfly.userData.angle;
+    
+    // Scintillement
+    butterfly.material.opacity = 0.6 + Math.sin(time * 3 + i) * 0.3;
+  });
+  
+  // === ROTATION PARTICULES DORÉES ===
+  particlesMesh.rotation.y += 0.0003;
+  particlesMesh.rotation.x += 0.0002;
+  
+  // === LUMIÈRES DYNAMIQUES ===
+  // Lumière principale orbite dorée
+  pointLight1.position.x = Math.sin(time * 0.5) * 20;
+  pointLight1.position.z = Math.cos(time * 0.5) * 20;
+  pointLight1.position.y = Math.sin(time * 0.3) * 10 + 5;
+  pointLight1.intensity = 3 + Math.sin(time * 2) * 0.5;
+  
+  // Lumière secondaire orbite rose
+  pointLight2.position.x = Math.cos(time * 0.4) * 20;
+  pointLight2.position.z = Math.sin(time * 0.4) * 20;
+  pointLight2.position.y = Math.cos(time * 0.35) * 10 + 5;
+  pointLight2.intensity = 2.5 + Math.cos(time * 2.5) * 0.5;
+  
+  // Spotlight suit le trône
+  spotLight.position.y = 15 + Math.sin(time * 0.5) * 3;
+  spotLight.intensity = 2 + Math.sin(time * 1.5) * 0.5;
+  
+  renderer.render(scene, camera);
+}
+animate();
+
+// RESPONSIVE
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// SMOOTH SCROLL
+document.querySelector('.btn-enter').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.querySelector('#main-content').scrollIntoView({behavior:'smooth'});
+});
+
+// ANIMATIONS SCROLL
+const sections = document.querySelectorAll('section');
+const revealOnScroll = () => { 
+  sections.forEach(sec => {
+    if(sec.getBoundingClientRect().top < window.innerHeight*0.85) sec.classList.add('show');
+  });
+};
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
+// FORMULAIRE + POPUPS + PDF
+const form = document.getElementById('bookingForm');
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  const nom = document.getElementById('nom').value;
+  const email = document.getElementById('email').value;
+  const tel = document.getElementById('tel').value;
+  const prestation = document.getElementById('prestation').value;
+  const date = document.getElementById('date').value;
+  const heure = document.getElementById('heure').value;
+
+  const popupConfirmation = document.getElementById('popup-confirmation');
+  const popupReminder = document.getElementById('popup-reminder');
+  popupConfirmation.style.display='block';
+  setTimeout(()=>{popupConfirmation.style.display='none';},3000);
+  setTimeout(()=>{popupReminder.style.display='block';setTimeout(()=>{popupReminder.style.display='none';},3500)},3000);
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(22); doc.setTextColor(182,143,64); doc.setFont("helvetica","bold");
+  doc.text("Salon Élégance",105,25,{align:'center'});
+  doc.setFontSize(16); doc.setTextColor(0,0,0); doc.setFont("helvetica","normal");
+  doc.text("Accusé de réception de votre rendez-vous",105,40,{align:'center'});
+  let y=60;
+  doc.text(`Nom: ${nom}`,20,y); y+=10;
+  doc.text(`Email: ${email}`,20,y); y+=10;
+  doc.text(`Téléphone: ${tel}`,20,y); y+=10;
+  doc.text(`Prestation: ${prestation}`,20,y); y+=10;
+  doc.text(`Date: ${date}`,20,y); y+=10;
+  doc.text(`Heure: ${heure}`,20,y); y+=15;
+  doc.setFont("helvetica","bold"); doc.setTextColor(182,143,64);
+  doc.text("Signature: Salon Élégance",105,y,{align:'center'}); y+=15;
+  doc.setFont("helvetica","normal"); doc.setTextColor(0,0,0);
+  doc.text("Adresse: 123 Rue de la Beauté, 75001 Paris",105,y,{align:'center'});
+
+  doc.save(`Reservation_${nom}.pdf`);
+});
+</script>
+
+</body>
+</html>
